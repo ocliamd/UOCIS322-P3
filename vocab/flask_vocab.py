@@ -98,8 +98,6 @@ def check():
     # text = flask.request.form["attempt"]
     text = request.args.get("text", type=str)
     print(f"******* Entered {text} \n")
-    for word in WORDS.as_list():
-        print(word)
     jumble = flask.session["jumble"]
     matches = flask.session.get("matches", [])  # Default to empty list
 
@@ -115,7 +113,10 @@ def check():
         flask.session["matches"] = matches
         print(f'matches = {matches} \n')
         if text in WORDS.as_list():
+            print(f'Removing {text} from word list\n')
             WORDS.as_list().remove(text)
+        for word in WORDS.as_list():
+            print(word)
     elif text in matches:
         flask.flash("You already found {}".format(text))
     elif not matched or not in_jumble:
@@ -132,7 +133,7 @@ def check():
         print('*** SUCCESS ***')
         return flask.redirect(flask.url_for("success"))
     elif text in matches:
-        print('over here\n')
+        print('\n communicating via JSON \n')
         length = 5
         rslt = {"long_enough": length >= 5}
         return flask.jsonify(result=rslt)

@@ -70,6 +70,7 @@
             <!-- col -->
          </div>
          <!-- row -->
+
          <br />
          <div class="row">
             <div class="col-xs-6 text-center">
@@ -81,14 +82,28 @@
             </div>
          </div>
          <br />
-         {% if session.matches|length is not equalto 0  %}
-         <h2>You found </h2>
-         <p id="results">
-            {% for match in session.matches %}
-            {{ match }}
-            {% endfor %}
-         </p>
-         {% endif %}
+         <br />
+         <div class="row">
+            <div class="col-xs-6 text-center">
+               <h2 id="results">Hello Sweden!</h2>
+            </div>
+            <!-- col -->
+         </div>
+         <!-- row -->
+         <br />
+         <br />
+         <!-- {% if session.matches|length is not equalto 0  %} -->
+         <div class=""row">
+            <div class="col-xs-6 text-center">
+               <h2>You found </h2>
+               <p id="results">
+               <!--{% for match in session.matches %}
+               {{ match }}
+               {% endfor %}-->
+               </p>
+            </div>
+         </div>
+         <!-- {% endif %} -->
          {% with messages = get_flashed_messages() %}
          {% if messages %}
          <!-- Mismatch, already found, etc. "flashed" from Python -->
@@ -135,15 +150,24 @@
                             rsval = data.result.long_enough;
                             console.log("rsval: " + rsval)
                             if (rsval) {
-                               $("#response").html("That's eenough!");
+                               //$("#response").html("That's eenough!");
+                               //var x = document.getElementsById("results");
+                               //document.getElementById("results").innerHTML = x[0].innerHTML + txt;
+                               document.getElementById("results").innerHTML = "You found: " + txt;
+                               //document.getElementById("results").appendChild(txt);
                                $("#attempt").val("");
                             } else {
                                $("#response").append(txt.length + " ");
                             }
                             //showTiles(txt);
-                            $("#response").html("You found " + txt);
-                            $("#response").css("color", "red");
-
+                            //$("#response").css("color", "red");
+                            var match;
+                            var text = "You found ";
+                            for (match in session.matches) {
+                               text += match + " ";
+                            }
+                            $("#response").html(text);
+                            //document.getElementById("results").innerHTML = txt;
                            }
                        );
                });
