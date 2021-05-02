@@ -70,7 +70,6 @@
             <!-- col -->
          </div>
          <!-- row -->
-
          <br />
          <div class="row">
             <div class="col-xs-6 text-center">
@@ -91,31 +90,9 @@
          </div>
          <!-- row -->
          <br />
-         <br />
-         <!-- {% if session.matches|length is not equalto 0  %} -->
-         <div class=""row">
-            <div class="col-xs-6 text-center">
-               <h2>You found </h2>
-               <p id="results">
-               <!--{% for match in session.matches %}
-               {{ match }}
-               {% endfor %}-->
-               </p>
-            </div>
-         </div>
-         <!-- {% endif %} -->
-         {% with messages = get_flashed_messages() %}
-         {% if messages %}
-         <!-- Mismatch, already found, etc. "flashed" from Python -->
-         {% for message in messages %}
-         <p class="message">{{ message }}</p>
-         {% endfor %}
-         {% endif %}
-         {% endwith %}
+         <p class="message"></p>
          <p id="response"> </p>
          <!-- JavaScript will insert text here -->
-         <p id="tiles"> </p>
-         <!-- Illustration of inserting graphics into page -->
          <script>
             // Suppress normal form submission
             $("#entry").submit( function(event) {
@@ -150,6 +127,7 @@
                             rsval = data.result.long_enough;
                             console.log("rsval: " + rsval)
                             if (rsval) {
+                               window.location.replace("/success");
                                //$("#response").html("That's eenough!");
                                //var x = document.getElementsById("results");
                                //document.getElementById("results").innerHTML = x[0].innerHTML + txt;
