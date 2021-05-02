@@ -130,8 +130,10 @@ def check():
 
     # Choose page:  Solved enough, or keep going?
     if len(matches) >= flask.session["target_count"]:
+        rslt = {"all_found": True}
         print('*** SUCCESS ***')
-        return flask.redirect(flask.url_for("success"))
+        return flask.jsonify(result=rslt)
+        #return flask.redirect(flask.url_for("success"))
     elif text in matches:
         print('\n communicating via JSON \n')
         length = 5

@@ -125,9 +125,12 @@
                $.getJSON( "/_check", { text: txt },
                           function(data) {
                             rsval = data.result.long_enough;
+                            ffval = data.result.all_found;
                             console.log("rsval: " + rsval)
+                            if (ffval) {
+                              window.location.replace("/success");
+                             }
                             if (rsval) {
-                               window.location.replace("/success");
                                //$("#response").html("That's eenough!");
                                //var x = document.getElementsById("results");
                                //document.getElementById("results").innerHTML = x[0].innerHTML + txt;
