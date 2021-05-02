@@ -116,7 +116,6 @@ def check():
         print(f'matches = {matches} \n')
         if text in WORDS.as_list():
             WORDS.as_list().remove(text)
-
     elif text in matches:
         flask.flash("You already found {}".format(text))
     elif not matched or not in_jumble:
@@ -131,7 +130,7 @@ def check():
     # Choose page:  Solved enough, or keep going?
     if len(matches) >= flask.session["target_count"]:
         print('*** SUCCESS ***')
-        return flask.redirect(flask.url_for("complete"))
+        return flask.redirect(flask.url_for("success"))
     elif text in matches:
         print('over here\n')
         length = 5
@@ -155,14 +154,12 @@ def example():
     rslt = {"key": "value"}
     return flask.jsonify(result=rslt)
 
-@app.route("/complete")
+
+'''@app.route("/complete")
 def complete():
-    """
-    Example ajax request handler
-    """
     app.logger.debug("Got a JSON request for complete")
     rslt = {"complete": "value"}
-    return flask.jsonify(result=rslt)
+    return flask.jsonify(result=rslt)'''
 
 #################
 # Functions used within the templates
