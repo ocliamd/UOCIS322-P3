@@ -5,6 +5,7 @@ from a scrambled string)
 """
 
 import flask
+from flask import request
 import logging
 
 # Our modules
@@ -74,7 +75,14 @@ def success():
 #   a JSON request handler
 #######################
 
-@app.route("/_check", methods=["POST"])
+###############
+# AJAX request handlers
+#   These return JSON to JQuery, and it updates the webpage,
+#   as opposed to rendering a new page.
+###############
+
+
+@app.route("/_check")
 def check():
     """
     User has submitted the form with a word ('attempt')
@@ -87,7 +95,11 @@ def check():
     app.logger.debug("Entering check")
 
     # The data we need, from form and from cookie
-    text = flask.request.form["attempt"]
+    # text = flask.request.form["attempt"]
+    text = request.args.get("text", type=str)
+    print(f"******* Entered {text} \n")
+    for word in WORDS.as_list():
+        print(word)
     jumble = flask.session["jumble"]
     matches = flask.session.get("matches", [])  # Default to empty list
 
@@ -98,11 +110,16 @@ def check():
     # Respond appropriately
     if matched and in_jumble and not (text in matches):
         # Cool, they found a new word
+        print(f"******* Found {text} \n")
         matches.append(text)
         flask.session["matches"] = matches
+        print(f'matches = {matches} \n')
+        if text in WORDS.as_list():
+            WORDS.as_list().remove(text)
+
     elif text in matches:
         flask.flash("You already found {}".format(text))
-    elif not matched:
+    elif not matched or not in_jumble:
         flask.flash("{} isn't in the list of words".format(text))
     elif not in_jumble:
         flask.flash(
@@ -113,9 +130,15 @@ def check():
 
     # Choose page:  Solved enough, or keep going?
     if len(matches) >= flask.session["target_count"]:
-       return flask.redirect(flask.url_for("success"))
+        print('*** SUCCESS ***')
+        return flask.redirect(flask.url_for("complete"))
+    elif text in matches:
+        print('over here\n')
+        length = 5
+        rslt = {"long_enough": length >= 5}
+        return flask.jsonify(result=rslt)
     else:
-       return flask.redirect(flask.url_for("keep_going"))
+        return flask.redirect(flask.url_for("keep_going"))
 
 
 ###############
@@ -132,6 +155,14 @@ def example():
     rslt = {"key": "value"}
     return flask.jsonify(result=rslt)
 
+@app.route("/complete")
+def complete():
+    """
+    Example ajax request handler
+    """
+    app.logger.debug("Got a JSON request for complete")
+    rslt = {"complete": "value"}
+    return flask.jsonify(result=rslt)
 
 #################
 # Functions used within the templates
