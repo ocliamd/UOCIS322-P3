@@ -5,7 +5,6 @@ from a scrambled string)
 """
 
 import flask
-from flask import request
 import logging
 
 # Our modules
@@ -14,6 +13,11 @@ from src.vocab import Vocab
 from src.jumble import jumbled
 import src.config as config
 
+
+logging.basicConfig(format='%(levelname)s:%(message)s',
+                    level=logging.INFO)
+
+log = logging.getLogger(__name__)
 
 ###
 # Globals
@@ -54,16 +58,6 @@ def index():
     return flask.render_template('vocab.html')
 
 
-@app.route("/keep_going")
-def keep_going():
-    """
-    After initial use of index, we keep the same scrambled
-    word and try to get more matches
-    """
-    flask.g.vocab = WORDS.as_list()
-    return flask.render_template('vocab.html')
-
-
 @app.route("/success")
 def success():
     return flask.render_template('success.html')
@@ -74,13 +68,6 @@ def success():
 #   You'll need to change this to a
 #   a JSON request handler
 #######################
-
-###############
-# AJAX request handlers
-#   These return JSON to JQuery, and it updates the webpage,
-#   as opposed to rendering a new page.
-###############
-
 
 @app.route("/_check")
 def check():
@@ -95,9 +82,7 @@ def check():
     app.logger.debug("Entering check")
 
     # The data we need, from form and from cookie
-    # text = flask.request.form["attempt"]
-    text = request.args.get("text", type=str)
-    print(f"******* Entered {text} \n")
+    text = flask.request.args.get("text", type=str)
     jumble = flask.session["jumble"]
     matches = flask.session.get("matches", [])  # Default to empty list
 
@@ -105,42 +90,27 @@ def check():
     in_jumble = LetterBag(jumble).contains(text)
     matched = WORDS.has(text)
 
-    # Respond appropriately
-    if matched and in_jumble and not (text in matches):
-        # Cool, they found a new word
-        print(f"******* Found {text} \n")
+    rslt = {'matched': False, 'in_jumble': False, 'found_already': False, 'found_all': False, 'jumble': jumble, 'text': '', 'matches': matches}
+
+
+    rslt['found_already'] = text in matches
+    rslt['text'] = text
+
+    if (matched) and (in_jumble) and (text not in matches):
         matches.append(text)
         flask.session["matches"] = matches
-        print(f'matches = {matches} \n')
-        if text in WORDS.as_list():
-            print(f'Removing {text} from word list\n')
-            WORDS.as_list().remove(text)
-        for word in WORDS.as_list():
-            print(word)
-    elif text in matches:
-        flask.flash("You already found {}".format(text))
-    elif not matched or not in_jumble:
-        flask.flash("{} isn't in the list of words".format(text))
-    elif not in_jumble:
-        flask.flash(
-            '"{}" can\'t be made from the letters {}'.format(text, jumble))
-    else:
-        app.logger.debug("This case shouldn't happen!")
-        assert False  # Raises AssertionError
 
-    # Choose page:  Solved enough, or keep going?
-    if len(matches) >= flask.session["target_count"]:
-        rslt = {"all_found": True}
-        print('*** SUCCESS ***')
-        return flask.jsonify(result=rslt)
-        #return flask.redirect(flask.url_for("success"))
-    elif text in matches:
-        print('\n communicating via JSON \n')
-        length = 5
-        rslt = {"long_enough": length >= 5}
-        return flask.jsonify(result=rslt)
-    else:
-        return flask.redirect(flask.url_for("keep_going"))
+    num_matches = len(matches)
+    #print(f'matches = {matches} \n')
+
+    rslt['matched'] = WORDS.has(text)
+
+    rslt['in_jumble'] = in_jumble
+
+    rslt['found_all'] = num_matches >= flask.session['target_count']
+
+    #print(rslt)
+    return flask.jsonify(result=rslt)
 
 
 ###############
@@ -158,12 +128,6 @@ def example():
     return flask.jsonify(result=rslt)
 
 
-'''@app.route("/complete")
-def complete():
-    app.logger.debug("Got a JSON request for complete")
-    rslt = {"complete": "value"}
-    return flask.jsonify(result=rslt)'''
-
 #################
 # Functions used within the templates
 #################
@@ -175,6 +139,7 @@ def format_filt(something):
     the Jinja2 code
     """
     return "Not what you asked for"
+
 
 ###################
 #   Error handlers

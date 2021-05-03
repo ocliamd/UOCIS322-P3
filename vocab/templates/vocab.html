@@ -73,7 +73,7 @@
          <br />
          <div class="row">
             <div class="col-xs-6 text-center">
-               <form id="entry">
+               <form id="entry" method="POST" action="/_check">
                   <label for="attempt">Word:</label>
                   <input id="attempt" name="attempt" type="text" width="15"
                      autocomplete="off"  autofocus />
@@ -81,110 +81,48 @@
             </div>
          </div>
          <br />
-         <br />
-         <div class="row">
-            <div class="col-xs-6 text-center">
-               <h2 id="results">Hello Sweden!</h2>
-            </div>
-            <!-- col -->
-         </div>
-         <!-- row -->
-         <br />
-         <p class="message"></p>
-         <p id="response"> </p>
-         <!-- JavaScript will insert text here -->
+         <p id="results"> </p>
+         <p id="message"> </p>
+
          <script>
             // Suppress normal form submission
             $("#entry").submit( function(event) {
                event.preventDefault();
               });
 
-            // On each keystroke, ask the server whether the current
-            // word is long enough.
-            //
-            // We use 'keyup' because the form value
-            // is updated before that event is generated.
-            // keypress is triggered before the input field has been
-            // updated.  Be aware that we'll see non-character keys like
-            // shift and control, so make sure whatever you do with the
-            // event does not depend on it being a letter.
-            //
+           
             $("#attempt").keyup(function(event) {
                var txt = $("#attempt").val();  // Current content of the input field
-               var keycode = event.which;      // They key that just went up
+               var keycode = event.which;      // The key that just went up
                var letter = String.fromCharCode(keycode);
+               console.log(txt);
 
-               // That letter might not be a letter ... it could be the
-               // the backspace key, or even the shift key, because 'keyup'
-               // catches all kinds of keys.  (Also, the difference between
-               // upper and lower case comes from state of shift key + key code,
-               // so ignoring the shift key we get only the upper case letters.
-
-               if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) { return }
+              // if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) { return }
 
                $.getJSON( "/_check", { text: txt },
-                          function(data) {
-                            rsval = data.result.long_enough;
-                            ffval = data.result.all_found;
-                            console.log("rsval: " + rsval)
-                            if (ffval) {
-                              window.location.replace("/success");
-                             }
-                            if (rsval) {
-                               //$("#response").html("That's eenough!");
-                               //var x = document.getElementsById("results");
-                               //document.getElementById("results").innerHTML = x[0].innerHTML + txt;
-                               document.getElementById("results").innerHTML = "You found: " + txt;
-                               //document.getElementById("results").appendChild(txt);
-                               $("#attempt").val("");
-                            } else {
-                               $("#response").append(txt.length + " ");
-                            }
-                            //showTiles(txt);
-                            //$("#response").css("color", "red");
-                            var match;
-                            var text = "You found ";
-                            for (match in session.matches) {
-                               text += match + " ";
-                            }
-                            $("#response").html(text);
-                            //document.getElementById("results").innerHTML = txt;
+                           function(data) {
+                           var result = data.result;
+
+                              if(result.found_all){
+                                 window.location.replace("/success");
+                                 }
+                              else if(!result.in_jumble){
+                                 $("#message").html(result.text + " cant be made from the letters " + result.jumble);
+                                 $("#attempt").val("");
+                              }
+                              else if(result.found_already){
+                                 $("#message").html("You already found " + result.text);
+                              }
+                              else if(result.matched && result.in_jumble){
+                                 $("#results").html("You found: " + result.matches);
+                                 $("#attempt").val("");
+                              }
+
                            }
-                       );
+               );
                });
-               //$.getJSON( "/_complete", { text: txt },
-                          //function(data) {
-                              //cval = data.result.complete;
-                              //if (cval) {
-                                 //$("#response").html("Success. That was awesome!");
-                          //}
-                       //);
-               //});
-            // Demonstration of how we can insert graphical elements
-            // into a page, possibly building up the URLs of the elements
-            // dynamically.  In this case I have a set of Scrabble tiles with
-            // point values and a consistent naming scheme that allows me to
-            // generate a URL for each letter.  Browsers should cache the graphics
-            // files so that http requests are sent only the first time each
-            // element is encountered.
-            //
-            function showTiles(text) {
-               text = text.toUpperCase();  // tiles are letter-A.png, etc.
-               tiles_html = "";  // Build up the html text of links
-               for (var i=0; i < text.length; i++) {
-                   letter = text.charAt(i);
-                   if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) {
-                      continue;
-                   }
-                   var tileURL = "/static/img/letter-" + letter + ".png";
-                   var tileLink = "<img src='" + tileURL +
-                       "' style='border: 0px; margin: 0px;'/>";
-                   tiles_html = tiles_html + tileLink;
-                }
-                $("#tiles").html(tiles_html);
-            }
-         </script>
-      </div>
+         </script>   
+     </div>
       <!-- container -->
    </body>
 </html>
