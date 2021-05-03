@@ -112,6 +112,7 @@
                               }
                               else if(result.found_already){
                                  $("#message").html("You already found " + result.text);
+                                 $("#attempt").val("");
                               }
                               else if(result.matched && result.in_jumble){
                                  $("#results").html("You found: " + result.matches);
