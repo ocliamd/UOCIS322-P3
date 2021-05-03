@@ -35,7 +35,8 @@ This directory contains a few word lists in the form of text files. You should n
 ### How do I run the tests?
 The `tests` directory contains a test suite for the `src` package. There's a `run_tests.sh`, which you can run in your container while it's running. However, it is not required, since you will not be changing anything in `src`.
 
-	 
+## Edits 
+Liam Dauphinee
 
 ## Credits
 
