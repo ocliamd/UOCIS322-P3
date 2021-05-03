@@ -20,17 +20,6 @@ docker exec -it YOUR_CONTAINER_ID /bin/bash
 
 This way you can run the tests, run another script, and really experiment with what goes on inside your container.
 
-## Tasks
-
-* Familiarize yourself with `flask_vocab.py` and `flask_minijax.py` by running them separately. You need to understand them to do this project.
-
-* Your task is to replace the form interaction (in `flask_vocab.py`) with AJAX interaction on each keystroke using `flask_minijax.py`.
-
-* Revise `Dockerfile`.
-
-* As always, submit your `credentials.ini` through Canvas. It should contain your name and git repo URL.
-
-* As always, revise the README file.
 
 ## FAQ
 ### What is `src`?
@@ -46,29 +35,6 @@ This directory contains a few word lists in the form of text files. You should n
 ### How do I run the tests?
 The `tests` directory contains a test suite for the `src` package. There's a `run_tests.sh`, which you can run in your container while it's running. However, it is not required, since you will not be changing anything in `src`.
 
-## Grading Rubric
-
-* If your code works as expected: 100 points. This includes:
-	* AJAX in the frontend (`vocab.html`)
-	* Logic in the backend (`flask_vocab.py`)
-	* Frontend to backend interaction (with correct requests and responses) between `vocab.html` and `flask_vocab.py`.
-
-* If the JQuery logic is not working, 30 points will be docked off.
-
-* If the html file (replacing the original form interaction, i.e., replacing the button with JQuery code) is wrong or is missing in the appropriate location, 30 points will be docked off.
-
-* If none of the functionalities work, 40 points will be given assuming
-    * the `credentials.ini` is submitted with the correct URL of your repo,
-    * the `Dockerfile` builds without any errors, and
-
-* If the `Dockerfile` doesn't build or is missing, 20 points will be docked off.
-
-* If `credentials.ini` is not submitted or the repo is not found, 0 will be assigned.
-
-* EXTRA CREDIT:
-	* Remove (strikethrough) the words that are found from the word list at the top.
-	
-	* No HTML or response text in your JavaScript and Flask app.
 	 
 
 ## Credits
